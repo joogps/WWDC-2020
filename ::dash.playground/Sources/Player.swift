@@ -19,6 +19,8 @@ class Player: SKSpriteNode {
         physicsBody?.linearDamping = 10
         physicsBody?.angularDamping = 10
         
+        zRotation = CGFloat.pi/2
+        
         blink()
     }
     

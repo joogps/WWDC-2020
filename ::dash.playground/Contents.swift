@@ -9,7 +9,8 @@ let tracker = NSTrackingArea(rect: view.frame, options: options, owner: view, us
 
 view.addTrackingArea(tracker)
 
-let scene = GameScene(size: view.bounds.size)
+let scene = MenuScene(size: view.bounds.size)
 view.presentScene(scene)
 
 PlaygroundSupport.PlaygroundPage.current.liveView = view
+
