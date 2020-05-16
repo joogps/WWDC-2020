@@ -1,5 +1,11 @@
 import SpriteKit
 
+enum Categories: UInt32 {
+    case Player = 1
+    case Projectile = 2
+    case Enemy = 4
+}
+
 func helveticaNeueFonts() -> Array<String> {
     let fonts = NSFontManager.shared.availableFonts
     var helveticaNeueFonts = [String]()

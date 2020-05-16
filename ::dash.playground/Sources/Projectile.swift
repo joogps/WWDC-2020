@@ -23,6 +23,10 @@ class Projectile: SKSpriteNode {
         physicsBody?.angularDamping = 0
         
         physicsBody?.velocity = CGVector(dx: dx*250, dy: dy*250)
+        
+        physicsBody?.categoryBitMask = Categories.Projectile.rawValue
+        physicsBody?.collisionBitMask = 0
+        physicsBody?.contactTestBitMask = Categories.Enemy.rawValue
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -4,6 +4,8 @@ public class MenuScene: SKScene {
     var title: SKLabelNode!
     var subTitle: SKLabelNode!
     
+    var canMove = false
+    
     public override func didMove(to view: SKView) {
         backgroundColor = .white
         
@@ -11,7 +13,7 @@ public class MenuScene: SKScene {
         title.text = "//dash"
         title.fontSize = 85
         title.fontColor = .black
-        title.position = CGPoint(x: frame.midX, y: frame.midY-20)
+        title.position = CGPoint(x: frame.midX, y: frame.midY-title.frame.height/2)
         
         subTitle = SKLabelNode()
         subTitle.text = "click anywhere to start"
@@ -22,7 +24,7 @@ public class MenuScene: SKScene {
         
         var fonts = helveticaNeueFonts().shuffled()
         fonts.append("HelveticaNeue-BoldItalic")
-        animateLabelFont(label: self.title, fonts: fonts, timeInterval: 0.1, callback: {
+        animateLabelFont(label: title, fonts: fonts, timeInterval: 0.1, callback: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 let fadeIn = SKAction.fadeAlpha(to: 1, duration: 1.5)
                 self.subTitle.run(fadeIn)
@@ -47,7 +49,7 @@ public class MenuScene: SKScene {
     
     func openGameScene() {
         let transition = SKTransition.reveal(with: .up, duration: 0.5)
-        let scene:SKScene = GameScene(size: self.size)
+        let scene = GameScene(size: size)
         self.view?.presentScene(scene, transition: transition)
     }
 }

@@ -22,6 +22,10 @@ class Player: SKSpriteNode {
         zRotation = CGFloat.pi/2
         
         blink()
+        
+        physicsBody?.categoryBitMask = Categories.Player.rawValue
+        physicsBody?.collisionBitMask = 0
+        physicsBody?.contactTestBitMask = Categories.Enemy.rawValue
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -53,15 +57,15 @@ class Player: SKSpriteNode {
     func dash() {
         let dx = Double(cosf(Float(zRotation)))
         let dy = Double(sinf(Float(zRotation)))
-        let amplitude = Double(150)
+        let amplitude = Double(175)
         physicsBody?.applyImpulse(CGVector(dx: dx*amplitude, dy: dy*amplitude))
     }
     
     func turnRight() {
-        physicsBody?.angularVelocity = -15
+        physicsBody?.angularVelocity = -7.5
     }
     
     func turnLeft() {
-        physicsBody?.angularVelocity = 15
+        physicsBody?.angularVelocity = 7.5
     }
 }
