@@ -4,12 +4,18 @@ class Player: SKSpriteNode {
     var lastTimeShot: TimeInterval
     let cooldown = 0.5
     
+    var lastTimeSuperShot: TimeInterval
+    let superCooldown = 10.0
+    
+    var superShotInterval: TimeInterval
+    var superShotMinInterval = 1.0
+    
     init(position: CGPoint, size: CGSize) {
-        let texture = SKTexture(imageNamed: "bitty.png")
-        texture.filteringMode = .nearest
-        
         lastTimeShot = cooldown
+        lastTimeSuperShot = superCooldown
+        superShotInterval = 0.0
         
+        let texture = SKTexture(imageNamed: "bitty.png")
         super.init(texture: texture, color: .white, size: size)
         
         self.position = position
@@ -21,11 +27,11 @@ class Player: SKSpriteNode {
         
         zRotation = CGFloat.pi/2
         
-        blink()
-        
         physicsBody?.categoryBitMask = Categories.Player.rawValue
         physicsBody?.collisionBitMask = 0
         physicsBody?.contactTestBitMask = Categories.Enemy.rawValue
+        
+        blink()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -45,13 +51,35 @@ class Player: SKSpriteNode {
     func shoot() {
         let currentTime = (scene as! GameScene).currentTime!
         
+        if currentTime - superShotInterval > superShotMinInterval {
+            superShoot()
+        } else {
+            regularShoot()
+        }
+    }
+    
+    func regularShoot() {
+        let currentTime = (scene as! GameScene).currentTime!
+        
         if currentTime - lastTimeShot > cooldown {
             let projectile = Projectile(player: self, size: CGSize(width: 20, height: 10))
             scene?.addChild(projectile)
             
             lastTimeShot = currentTime
         }
+    }
+    
+    func superShoot() {
+        let currentTime = (scene as! GameScene).currentTime!
         
+        if currentTime - lastTimeSuperShot > superCooldown {
+            let projectile = Projectile(player: self, size: CGSize(width: 60, height: 30), superShot: true)
+            scene?.addChild(projectile)
+            
+            lastTimeSuperShot = currentTime
+            
+            (scene as! GameScene).stressBackground()
+        }
     }
     
     func dash() {
@@ -67,5 +95,15 @@ class Player: SKSpriteNode {
     
     func turnLeft() {
         physicsBody?.angularVelocity = 7.5
+    }
+    
+    func rotateToPoint(point: CGPoint) {
+        let relativeToStart = CGPoint(x: point.x - position.x, y: point.y - position.y)
+        let radians = atan2(relativeToStart.y, relativeToStart.x)
+        zRotation = radians
+    }
+    
+    func prepareToShoot() {
+        superShotInterval = (scene as! GameScene).currentTime!
     }
 }

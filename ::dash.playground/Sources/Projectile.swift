@@ -1,7 +1,11 @@
 import SpriteKit
 
 class Projectile: SKSpriteNode {
-    init(player: Player, size: CGSize) {
+    let superShot: Bool
+    
+    init(player: Player, size: CGSize, superShot: Bool = false) {
+        self.superShot = superShot
+        
         super.init(texture: SKTexture(), color: .white, size: size)
         
         let dx = CGFloat(cosf(Float(player.zRotation)))
@@ -13,8 +17,10 @@ class Projectile: SKSpriteNode {
         let pw = player.size.width
         let ph = player.size.height
         
-        self.position = CGPoint(x: px+(dx*pw/2), y: py+(dy*ph/2))
+        self.position = CGPoint(x: px+(dx*(pw/2-size.width/2)), y: py+(dy*(ph/2-size.height/2)))
         zRotation = player.zRotation
+        
+        zPosition = -1
         
         physicsBody = SKPhysicsBody(rectangleOf: size)
         

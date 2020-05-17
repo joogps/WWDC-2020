@@ -31,10 +31,6 @@ public class MenuScene: SKScene {
             }
         })
         
-        
-        // let feedbackPerformer = NSHapticFeedbackManager.defaultPerformer
-        // feedbackPerformer.perform(.levelChange, performanceTime: .now)
-        
         addChild(title)
         addChild(subTitle)
     }

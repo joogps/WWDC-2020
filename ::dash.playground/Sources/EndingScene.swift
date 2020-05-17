@@ -1,7 +1,7 @@
 import SpriteKit
 
-let goodPhrases = ["you rocked it", "awesome", "impressive"]
-let badPhrases = ["you can do better", "i believe in u", "try harder next time"]
+let goodPhrases = ["you rocked it", "awesome", "impressive", "good game"]
+let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another shot"]
 
 public class EndingScene: SKScene {
     var title: SKLabelNode!
