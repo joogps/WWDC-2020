@@ -1,6 +1,11 @@
 import SpriteKit
+import AVFoundation
 
 class Player: SKSpriteNode {
+    var shootSound: AVAudioPlayer!
+    var superShootSound: AVAudioPlayer!
+    var errorSound: AVAudioPlayer!
+    
     var lastTimeShot: TimeInterval
     let cooldown = 0.5
     
@@ -10,12 +15,18 @@ class Player: SKSpriteNode {
     var superShotInterval: TimeInterval
     var superShotMinInterval = 1.0
     
+    var stronger = false
+    
     init(position: CGPoint, size: CGSize) {
+        shootSound = loadSound(fileNamed: "Sounds/drop_002.mp3")
+        superShootSound = loadSound(fileNamed: "Sounds/drop_004.mp3")
+        errorSound = loadSound(fileNamed: "Sounds/bong_001.mp3")
+            
         lastTimeShot = cooldown
         lastTimeSuperShot = superCooldown
         superShotInterval = 0.0
         
-        let texture = SKTexture(imageNamed: "bitty.png")
+        let texture = SKTexture(imageNamed: "Assets/bitty-1.png")
         super.init(texture: texture, color: .white, size: size)
         
         self.position = position
@@ -40,9 +51,9 @@ class Player: SKSpriteNode {
     
     func blink() {
         DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 3..<7)) {
-            self.texture = SKTexture()
+            self.setTexture(blinking: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.1..<0.2)) {
-                self.texture = SKTexture(imageNamed: "bitty.png")
+                self.setTexture()
                 self.blink()
             }
         }
@@ -62,6 +73,8 @@ class Player: SKSpriteNode {
         let currentTime = (scene as! GameScene).currentTime!
         
         if currentTime - lastTimeShot > cooldown {
+            shootSound?.play()
+            
             let projectile = Projectile(player: self, size: CGSize(width: 20, height: 10))
             scene?.addChild(projectile)
             
@@ -73,28 +86,32 @@ class Player: SKSpriteNode {
         let currentTime = (scene as! GameScene).currentTime!
         
         if currentTime - lastTimeSuperShot > superCooldown {
+            superShootSound?.play()
+            
             let projectile = Projectile(player: self, size: CGSize(width: 60, height: 30), superShot: true)
             scene?.addChild(projectile)
             
             lastTimeSuperShot = currentTime
-            
-            (scene as! GameScene).stressBackground()
+        } else if currentTime - lastTimeSuperShot > 0.5 {
+            errorSound?.play()
         }
+        
+        (scene as! GameScene).stressBackground()
     }
     
     func dash() {
         let dx = Double(cosf(Float(zRotation)))
         let dy = Double(sinf(Float(zRotation)))
-        let amplitude = Double(175)
+        let amplitude = Double(175.0*speed)
         physicsBody?.applyImpulse(CGVector(dx: dx*amplitude, dy: dy*amplitude))
     }
     
     func turnRight() {
-        physicsBody?.angularVelocity = -7.5
+        physicsBody?.angularVelocity = -7.5*speed
     }
     
     func turnLeft() {
-        physicsBody?.angularVelocity = 7.5
+        physicsBody?.angularVelocity = 7.5*speed
     }
     
     func rotateToPoint(point: CGPoint) {
@@ -105,5 +122,21 @@ class Player: SKSpriteNode {
     
     func prepareToShoot() {
         superShotInterval = (scene as! GameScene).currentTime!
+    }
+    
+    func enableStronger() {
+        stronger = true
+        setTexture()
+    }
+    
+    func disableStronger() {
+        stronger = false
+        setTexture()
+    }
+    
+    func setTexture(blinking: Bool = false) {
+        let prefix = stronger ? "stronger-" : ""
+        let suffix = blinking ? "-2" : "-1"
+        self.texture = SKTexture(imageNamed: "Assets/\(prefix)bitty\(suffix).png")
     }
 }

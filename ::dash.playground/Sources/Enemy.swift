@@ -15,7 +15,7 @@ class Enemy: SKSpriteNode {
         self.shooter = shooter
         
         let prefix = shooter ? "shooter-" : ""
-        let texture = SKTexture(imageNamed: prefix+"enemy-\(strength).png")
+        let texture = SKTexture(imageNamed: "Assets/\(prefix)enemy-\(strength).png")
         super.init(texture: texture, color: .white, size: size)
         
         switch Int.random(in: 0...3) {
@@ -66,17 +66,14 @@ class Enemy: SKSpriteNode {
     
     func removeStrength() {
         strength -= 1
-        
-        let prefix = self.shooter ? "shooter-" : ""
-        texture = SKTexture(imageNamed: prefix+"enemy-\(strength).png")
+        setTexture()
     }
     
     func blink() {
         DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 3..<7)) {
-            self.texture = SKTexture(imageNamed: "enemy-\(self.strength).png")
+            self.setTexture(blinking: true)
             DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.1..<0.2)) {
-                let prefix = self.shooter ? "shooter-" : ""
-                self.texture = SKTexture(imageNamed: prefix+"enemy-\(self.strength).png")
+                self.setTexture()
                 self.blink()
             }
         }
@@ -89,5 +86,10 @@ class Enemy: SKSpriteNode {
     @objc func shoot() {
         let projectile = EnemyProjectile(enemy: self, size: CGSize(width: 15, height: 15))
         scene?.addChild(projectile)
+    }
+    
+    func setTexture(blinking: Bool = false) {
+        let prefix = blinking ? "" : (shooter ? "shooter-" : "")
+        texture = SKTexture(imageNamed: "Assets/\(prefix)enemy-\(strength).png")
     }
 }

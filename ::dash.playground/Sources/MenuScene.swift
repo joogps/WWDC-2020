@@ -1,8 +1,11 @@
 import SpriteKit
+import AVFoundation
 
 public class MenuScene: SKScene {
     var title: SKLabelNode!
     var subTitle: SKLabelNode!
+    
+    var startSoundEffect: AVAudioPlayer!
     
     var canMove = false
     
@@ -21,6 +24,8 @@ public class MenuScene: SKScene {
         subTitle.fontColor = .black
         subTitle.position = CGPoint(x: frame.midX, y: 50)
         subTitle.alpha = 0
+        
+        startSoundEffect = loadSound(fileNamed: "Sounds/confirmation_001.mp3")
         
         var fonts = helveticaNeueFonts().shuffled()
         fonts.append("HelveticaNeue-BoldItalic")
@@ -44,6 +49,8 @@ public class MenuScene: SKScene {
     }
     
     func openGameScene() {
+        startSoundEffect?.play()
+        
         let transition = SKTransition.reveal(with: .up, duration: 0.5)
         let scene = GameScene(size: size)
         self.view?.presentScene(scene, transition: transition)

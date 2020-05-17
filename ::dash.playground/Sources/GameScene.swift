@@ -1,9 +1,14 @@
 import SpriteKit
+import AVFoundation
 
 public class GameScene: SKScene, SKPhysicsContactDelegate {
-    private var background: SKSpriteNode!
-    private var player: Player!
-    private var enemies = [Enemy]()
+    var background: SKSpriteNode!
+    var player: Player!
+    var enemies = [Enemy]()
+    
+    var difficultyIncreaseSound: AVAudioPlayer!
+    var explosionSound: AVAudioPlayer!
+    var breakingSound: AVAudioPlayer!
     
     var difficulty = 1
     
@@ -14,6 +19,11 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var enemyTimer: Timer!
     
+    var slowMotionTimer: Timer!
+    var slowMotionStresses = 5
+    
+    var powerUpActive = false
+    
     public override func didMove(to view: SKView) {
         backgroundColor = .white
         
@@ -21,7 +31,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         background.position = CGPoint(x: frame.midX, y: frame.midY)
         background.zPosition = -2
         
-        player = Player(position: CGPoint(x: view.frame.width/2, y: view.frame.height/2), size: CGSize(width: 100, height: 100))
+        player = Player(position: CGPoint(x: view.frame.midX, y: view.frame.midY), size: CGSize(width: 100, height: 100))
         
         scoreLabel = SKLabelNode()
         scoreLabel.text = String(score)
@@ -32,6 +42,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         
         startEnemyTimer()
         
+        difficultyIncreaseSound = loadSound(fileNamed: "Sounds/confirmation_003.mp3")
+        explosionSound = loadSound(fileNamed: "Sounds/error_004.mp3")
+        breakingSound = loadSound(fileNamed: "Sounds/click_005.mp3")
+        
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         
@@ -41,12 +55,14 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startEnemyTimer() {
-        enemyTimer = Timer.scheduledTimer(timeInterval: 1/(Double(min(difficulty, 5)) / 5.0), target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
+        enemyTimer?.invalidate()
+        let speed = 1/(Double(min(difficulty, 5)) / 6.0)/Double(physicsWorld.speed)
+        enemyTimer = Timer.scheduledTimer(timeInterval: speed, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
     }
     
     @objc func createEnemy() {
-        let strength = Int.random(in: 1...min(difficulty, 3))
-        let shooter = difficulty > 3 ? Bool.random() : false
+        let strength = Bool.random() ? 1 : min(difficulty, Int.random(in: 2...3))
+        let shooter = difficulty > 3 ? (Float.random(in: 0...1) > 0.9) : false
         let enemy = Enemy(frame: view!.frame, size: CGSize(width: 50, height: 50), strength: strength, shooter: shooter)
         enemies.append(enemy)
         addChild(enemy)
@@ -64,10 +80,20 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         for enemy in enemies {
             enemy.follow(point: player.position)
         }
+        
+        if !powerUpActive && difficulty > 3 && Float.random(in: 0...1) > 0.999 {
+            let type = Int.random(in: 0...1)
+            
+            let texture = type == 0 ? "strength-power-up" : "slow-motion-power-up"
+            let category = (type == 0 ? Categories.StrengthPowerUp : Categories.SlowMotionPowerUp).rawValue
+            let powerup = PowerUp(frame: view!.frame, size: CGSize(width: 25, height: 25), texture: "Assets/\(texture)", category: category)
+            addChild(powerup)
+            powerUpActive = true
+        }
     }
     
     func createExplosion(node: SKNode) -> SKEmitterNode {
-        let emitter = SKEmitterNode(fileNamed: "explosion")
+        let emitter = SKEmitterNode(fileNamed: "Assets/explosion")
         emitter!.position = node.position
         addChild(emitter!)
         return emitter!
@@ -77,8 +103,10 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         let bodiesBitMasks: [UInt32] = [contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask]
         
         let projectileEnemyBitMasks: [UInt32] = [Categories.Projectile.rawValue, Categories.Enemy.rawValue]
-        let enemyPlayerBitMasks: [UInt32] = [Categories.Player.rawValue, Categories.Enemy.rawValue]
+        let playerEnemyBitMasks: [UInt32] = [Categories.Player.rawValue, Categories.Enemy.rawValue]
         let playerEnemyProjectileBitMasks: [UInt32] = [Categories.Player.rawValue, Categories.EnemyProjectile.rawValue]
+        let playerStrengthPowerUpBitMasks: [UInt32] = [Categories.Player.rawValue, Categories.StrengthPowerUp.rawValue]
+        let playerSlowMotionPowerUpBitMasks: [UInt32] = [Categories.Player.rawValue, Categories.SlowMotionPowerUp.rawValue]
         
         let nodeA = contact.bodyA.node!
         let nodeB = contact.bodyB.node!
@@ -97,12 +125,20 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             let emitter = createExplosion(node: nodeB)
             
             if enemy.strength > 1 && !projectile.superShot {
+                if physicsWorld.speed == 1 {
+                    breakingSound?.play()
+                }
+                
                 enemy.removeStrength()
                 emitter.particleScale = 0.1
                 return
             }
             
-            nodeB.removeFromParent()
+            if physicsWorld.speed == 1 {
+                explosionSound?.play()
+            }
+            
+            enemy.removeFromParent()
             if let index = enemies.firstIndex(of: enemy) {
                 enemies.remove(at: index)
             }
@@ -111,23 +147,69 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreLabel.text = String(score)
             
             if score % 10 == 0 {
+                difficultyIncreaseSound?.play()
+                
                 let fonts = Array(helveticaNeueFonts().shuffled()[0...3])
-                animateLabelFont(label: scoreLabel, fonts: fonts, timeInterval: 0.1, withFeedback: true)
+                animateLabelFont(label: scoreLabel, fonts: fonts, timeInterval: 0.1)
                 difficulty += 1
                 
-                enemyTimer.invalidate()
                 startEnemyTimer()
             }
-        case enemyPlayerBitMasks, playerEnemyProjectileBitMasks:
+        case playerEnemyBitMasks, playerEnemyProjectileBitMasks:
+            if player.stronger {
+                nodeB.removeFromParent()
+                player.disableStronger()
+                powerUpActive = false
+                return
+            }
+            
             hapticFeedback()
             
-            enemyTimer.invalidate()
+            enemyTimer?.invalidate()
+            slowMotionTimer?.invalidate()
+            
+            for enemy in enemies {
+                if enemy.shooter {
+                    enemy.projectileTimer.invalidate()
+                }
+            }
             
             let transition = SKTransition.moveIn(with: .down, duration: 0.5)
             let scene = EndingScene(size: size, score: score)
             self.view?.presentScene(scene, transition: transition)
+        case playerStrengthPowerUpBitMasks:
+            nodeB.removeFromParent()
+            
+            player.enableStronger()
+        case playerSlowMotionPowerUpBitMasks:
+            nodeB.removeFromParent()
+            
+            physicsWorld.speed = 0.5
+            player.speed = 2
+            
+            startSlowMotionTimer()
+            
+            startEnemyTimer()
         default:
             return
+        }
+    }
+    
+    func startSlowMotionTimer() {
+        slowMotionStresses = 5
+        slowMotionTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { timer in
+            self.stressBackground()
+            
+            if self.slowMotionStresses <= 1 {
+                timer.invalidate()
+                
+                self.powerUpActive = false
+                
+                self.physicsWorld.speed = 1
+                self.player.speed = 1
+            }
+            
+            self.slowMotionStresses -= 1
         }
     }
     
@@ -141,9 +223,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     public override func keyDown(with event: NSEvent) {
         switch event.keyCode {
-        case 49:
+        case 49, 36:
             player.prepareToShoot()
-        case 13, 126, 36:
+        case 13, 126:
             player.dash()
         case 0, 123:
             player.turnLeft()
@@ -155,7 +237,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     public override func keyUp(with event: NSEvent) {
-        if event.keyCode == 49 {
+        if event.keyCode == 49 || event.keyCode == 36 {
             player.shoot()
         }
     }

@@ -1,6 +1,6 @@
 import SpriteKit
 
-let goodPhrases = ["you rocked it", "awesome", "impressive", "good game"]
+let goodPhrases = ["you rocked it", "you're awesome", "impressive!", "good game", "pew pew"]
 let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another shot"]
 
 public class EndingScene: SKScene {

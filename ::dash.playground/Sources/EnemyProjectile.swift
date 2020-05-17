@@ -2,7 +2,7 @@ import SpriteKit
 
 class EnemyProjectile: SKSpriteNode {
     init(enemy: Enemy, size: CGSize) {
-        super.init(texture: SKTexture(imageNamed: "enemy-1.png"), color: .white, size: size)
+        super.init(texture: SKTexture(imageNamed: "Assets/enemy-1.png"), color: .white, size: size)
         
         let dx = CGFloat(cosf(Float(enemy.zRotation)))
         let dy = CGFloat(sinf(Float(enemy.zRotation)))
@@ -24,7 +24,7 @@ class EnemyProjectile: SKSpriteNode {
         physicsBody?.linearDamping = 0
         physicsBody?.angularDamping = 0
         
-        physicsBody?.velocity = CGVector(dx: dx*150, dy: dy*150)
+        physicsBody?.velocity = CGVector(dx: dx*100, dy: dy*100)
         
         physicsBody?.categoryBitMask = Categories.EnemyProjectile.rawValue
         physicsBody?.collisionBitMask = 0

@@ -22,13 +22,16 @@ class Projectile: SKSpriteNode {
         
         zPosition = -1
         
+        speed = player.speed
+        
         physicsBody = SKPhysicsBody(rectangleOf: size)
         
         physicsBody?.friction = 0
         physicsBody?.linearDamping = 0
         physicsBody?.angularDamping = 0
         
-        physicsBody?.velocity = CGVector(dx: dx*250, dy: dy*250)
+        let amplitude = 250*speed
+        physicsBody?.velocity = CGVector(dx: dx*amplitude, dy: dy*amplitude)
         
         physicsBody?.categoryBitMask = Categories.Projectile.rawValue
         physicsBody?.collisionBitMask = 0

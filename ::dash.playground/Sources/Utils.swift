@@ -1,10 +1,13 @@
 import SpriteKit
+import AVFoundation
 
 enum Categories: UInt32 {
     case Player = 1
     case Projectile = 2
     case Enemy = 4
     case EnemyProjectile = 8
+    case StrengthPowerUp = 16
+    case SlowMotionPowerUp = 32
 }
 
 func helveticaNeueFonts() -> Array<String> {
@@ -20,17 +23,14 @@ func helveticaNeueFonts() -> Array<String> {
     return helveticaNeueFonts
 }
 
-func animateLabelFont(label: SKLabelNode, fonts: Array<String>, timeInterval: TimeInterval, withFeedback: Bool = false, callback: (() -> Void)? = nil) {
+func animateLabelFont(label: SKLabelNode, fonts: Array<String>, timeInterval: TimeInterval, callback: (() -> Void)? = nil) {
     if fonts.count > 0 {
         DispatchQueue.main.asyncAfter(deadline: .now() + timeInterval) {
             label.fontName = fonts[0]
             var newFonts = fonts.map { $0 }
             newFonts.remove(at: 0)
             animateLabelFont(label: label, fonts: newFonts, timeInterval: timeInterval, callback: callback)
-            if withFeedback {
-                hapticFeedback()
-            }
-            }
+        }
     } else {
         callback?()
     }
@@ -39,4 +39,15 @@ func animateLabelFont(label: SKLabelNode, fonts: Array<String>, timeInterval: Ti
 func hapticFeedback() {
     let feedbackPerformer = NSHapticFeedbackManager.defaultPerformer
     feedbackPerformer.perform(.generic, performanceTime: .now)
+}
+
+func loadSound(fileNamed: String) -> AVAudioPlayer {
+    let path = Bundle.main.path(forResource: fileNamed, ofType: nil)!
+    let url = URL(fileURLWithPath: path)
+    var audioPlayer = AVAudioPlayer()
+    do {
+        audioPlayer = try AVAudioPlayer(contentsOf: url)
+    } catch {}
+    
+    return audioPlayer
 }
