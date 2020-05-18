@@ -11,7 +11,6 @@ class PowerUp: SKSpriteNode {
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width/2)
         
-        physicsBody?.friction = 0
         physicsBody?.linearDamping = 0
         physicsBody?.angularDamping = 0
         

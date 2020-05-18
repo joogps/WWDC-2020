@@ -26,11 +26,10 @@ class Projectile: SKSpriteNode {
         
         physicsBody = SKPhysicsBody(rectangleOf: size)
         
-        physicsBody?.friction = 0
         physicsBody?.linearDamping = 0
         physicsBody?.angularDamping = 0
         
-        let amplitude = 250*speed
+        let amplitude = 275*speed
         physicsBody?.velocity = CGVector(dx: dx*amplitude, dy: dy*amplitude)
         
         physicsBody?.categoryBitMask = Categories.Projectile.rawValue

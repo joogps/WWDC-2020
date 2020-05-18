@@ -12,7 +12,7 @@ This is Bitty. He's the good guy, and you control him. He also blinks a lot. His
  
  ## Enemies
  ![Image containing the kinds of enemies](Assets/markup-enemies.png)
- There are three types of enemies: the regular ones, the strong ones, and the smart ones. All of them appear randomly, with frequencies that increase progressively (every 10 points), and hitting them ends the game. The regular ones follow Bitty, and that's their only skill. The strong enemies need multiple shots to explode, since they can have up to two extra levels of strength. The smart enemies have an eye and thus, can see. That way, they can also shoot Bitty, with projectiles that can't be destroyed in any way, so you _need_ to dodge them away. Strong enemies can be combined with smart enemies.
+ There are three types of enemies: the regular ones, the strong ones, and the smart ones. All of them appear randomly, with frequencies that increase progressively (every 15 points), and hitting them ends the game. The regular ones follow Bitty, and that's their only skill. The strong enemies need multiple shots to explode, since they can have up to two extra levels of strength. The smart enemies have an eye and thus, can see. That way, they can also shoot Bitty, with projectiles that can't be destroyed in any way, so you _need_ to dodge them away. Strong enemies can be combined with smart enemies.
  
  ## Power-ups
  ![Image containing the kinds of power-ups](Assets/markup-power-ups.png)

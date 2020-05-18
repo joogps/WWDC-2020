@@ -7,7 +7,7 @@ class Player: SKSpriteNode {
     var errorSound: AVAudioPlayer!
     
     var lastTimeShot: TimeInterval
-    let cooldown = 0.5
+    let cooldown = 0.3
     
     var lastTimeSuperShot: TimeInterval
     let superCooldown = 10.0
@@ -19,7 +19,7 @@ class Player: SKSpriteNode {
     
     init(position: CGPoint, size: CGSize) {
         shootSound = loadSound(fileNamed: "Sounds/drop_002.mp3")
-        superShootSound = loadSound(fileNamed: "Sounds/drop_004.mp3")
+        superShootSound = loadSound(fileNamed: "Sounds/minimize_004.mp3")
         errorSound = loadSound(fileNamed: "Sounds/bong_001.mp3")
             
         lastTimeShot = cooldown
@@ -32,8 +32,7 @@ class Player: SKSpriteNode {
         self.position = position
         physicsBody = SKPhysicsBody(rectangleOf: size)
         
-        physicsBody?.friction = 10
-        physicsBody?.linearDamping = 10
+        physicsBody?.linearDamping = 15
         physicsBody?.angularDamping = 10
         
         zRotation = CGFloat.pi/2
@@ -73,6 +72,7 @@ class Player: SKSpriteNode {
         let currentTime = (scene as! GameScene).currentTime!
         
         if currentTime - lastTimeShot > cooldown {
+            shootSound?.stop()
             shootSound?.play()
             
             let projectile = Projectile(player: self, size: CGSize(width: 20, height: 10))
@@ -102,7 +102,7 @@ class Player: SKSpriteNode {
     func dash() {
         let dx = Double(cosf(Float(zRotation)))
         let dy = Double(sinf(Float(zRotation)))
-        let amplitude = Double(175.0*speed)
+        let amplitude = Double(250.0*speed)
         physicsBody?.applyImpulse(CGVector(dx: dx*amplitude, dy: dy*amplitude))
     }
     

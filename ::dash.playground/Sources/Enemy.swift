@@ -4,17 +4,17 @@ class Enemy: SKSpriteNode {
     let parentFrame: CGRect
     
     var strength: Int
-    var shooter: Bool
+    var smart: Bool
     
     var projectileTimer: Timer!
     
-    init(frame: CGRect, size: CGSize, strength: Int = 0, shooter: Bool = false) {
+    init(frame: CGRect, size: CGSize, strength: Int = 0, smart: Bool = false) {
         parentFrame = frame
         
         self.strength = strength
-        self.shooter = shooter
+        self.smart = smart
         
-        let prefix = shooter ? "shooter-" : ""
+        let prefix = smart ? "smart-" : ""
         let texture = SKTexture(imageNamed: "Assets/\(prefix)enemy-\(strength).png")
         super.init(texture: texture, color: .white, size: size)
         
@@ -33,7 +33,6 @@ class Enemy: SKSpriteNode {
         
         physicsBody = SKPhysicsBody(circleOfRadius: size.width/2)
         
-        physicsBody?.friction = 0
         physicsBody?.linearDamping = 0
         physicsBody?.angularDamping = 0
         
@@ -41,7 +40,7 @@ class Enemy: SKSpriteNode {
         physicsBody?.collisionBitMask = Categories.Enemy.rawValue
         physicsBody?.contactTestBitMask = Categories.Projectile.rawValue | Categories.Player.rawValue
         
-        if shooter {
+        if smart {
             blink()
             startProjectileTimer()
         }
@@ -80,7 +79,7 @@ class Enemy: SKSpriteNode {
     }
     
     func startProjectileTimer() {
-        projectileTimer = Timer.scheduledTimer(timeInterval: 2.5, target: self, selector: #selector(shoot), userInfo: nil, repeats: true)
+        projectileTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(shoot), userInfo: nil, repeats: true)
     }
     
     @objc func shoot() {
@@ -89,7 +88,7 @@ class Enemy: SKSpriteNode {
     }
     
     func setTexture(blinking: Bool = false) {
-        let prefix = blinking ? "" : (shooter ? "shooter-" : "")
+        let prefix = blinking ? "" : (smart ? "smart-" : "")
         texture = SKTexture(imageNamed: "Assets/\(prefix)enemy-\(strength).png")
     }
 }

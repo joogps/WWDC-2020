@@ -10,10 +10,17 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var explosionSound: AVAudioPlayer!
     var breakingSound: AVAudioPlayer!
     
+    var strengthStart: AVAudioPlayer!
+    var strengthEnd: AVAudioPlayer!
+    
+    var slowMotionStart: AVAudioPlayer!
+    var slowMotionTimerTick: AVAudioPlayer!
+    var slowMotionTimerDone: AVAudioPlayer!
+    
     var difficulty = 1
     
     var scoreLabel: SKLabelNode!
-    var score = 0
+    var score = 1
 
     var currentTime: TimeInterval!
     
@@ -46,6 +53,13 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         explosionSound = loadSound(fileNamed: "Sounds/error_004.mp3")
         breakingSound = loadSound(fileNamed: "Sounds/click_005.mp3")
         
+        slowMotionStart = loadSound(fileNamed: "Sounds/minimize_008.mp3")
+        slowMotionTimerTick = loadSound(fileNamed: "Sounds/tick_002.mp3")
+        slowMotionTimerDone = loadSound(fileNamed: "Sounds/glass_004.mp3")
+        
+        strengthStart = loadSound(fileNamed: "Sounds/toggle_001.mp3")
+        strengthEnd = loadSound(fileNamed: "Sounds/error_003.mp3")
+        
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         
@@ -56,21 +70,28 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func startEnemyTimer() {
         enemyTimer?.invalidate()
-        let speed = 1/(Double(min(difficulty, 5)) / 6.0)/Double(physicsWorld.speed)
+        let speed = 1/(Double(min(difficulty, 4)) / 5.0)/Double(physicsWorld.speed)
         enemyTimer = Timer.scheduledTimer(timeInterval: speed, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
     }
     
     @objc func createEnemy() {
         let strength = Bool.random() ? 1 : min(difficulty, Int.random(in: 2...3))
-        let shooter = difficulty > 3 ? (Float.random(in: 0...1) > 0.9) : false
-        let enemy = Enemy(frame: view!.frame, size: CGSize(width: 50, height: 50), strength: strength, shooter: shooter)
+        let smart = difficulty > 3 ? (Float.random(in: 0...1) > 0.9) : false
+        let enemy = Enemy(frame: view!.frame, size: CGSize(width: 50, height: 50), strength: strength, smart: smart)
         enemies.append(enemy)
         addChild(enemy)
     }
     
+    func createPowerUp(type: Int) {
+        let texture = type == 0 ? "strength-power-up" : "slow-motion-power-up"
+        let category = (type == 0 ? Categories.StrengthPowerUp : Categories.SlowMotionPowerUp).rawValue
+        let powerup = PowerUp(frame: view!.frame, size: CGSize(width: 25, height: 25), texture: "Assets/\(texture)", category: category)
+        addChild(powerup)
+    }
+    
     func stressBackground() {
         background.alpha = 0
-        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 0.5)
+        let fadeIn = SKAction.fadeAlpha(to: 1, duration: 0.75)
         background.run(fadeIn)
     }
     
@@ -81,13 +102,9 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             enemy.follow(point: player.position)
         }
         
-        if !powerUpActive && difficulty > 3 && Float.random(in: 0...1) > 0.999 {
+        if !powerUpActive && difficulty > 3 && Float.random(in: 0...1) > 0.999-Float(enemies.count)/750.0 {
             let type = Int.random(in: 0...1)
-            
-            let texture = type == 0 ? "strength-power-up" : "slow-motion-power-up"
-            let category = (type == 0 ? Categories.StrengthPowerUp : Categories.SlowMotionPowerUp).rawValue
-            let powerup = PowerUp(frame: view!.frame, size: CGSize(width: 25, height: 25), texture: "Assets/\(texture)", category: category)
-            addChild(powerup)
+            createPowerUp(type: type)
             powerUpActive = true
         }
     }
@@ -146,7 +163,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             score += 1
             scoreLabel.text = String(score)
             
-            if score % 10 == 0 {
+            if score % 15 == 0 {
                 difficultyIncreaseSound?.play()
                 
                 let fonts = Array(helveticaNeueFonts().shuffled()[0...3])
@@ -157,6 +174,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         case playerEnemyBitMasks, playerEnemyProjectileBitMasks:
             if player.stronger {
+                strengthEnd?.play()
+                
                 nodeB.removeFromParent()
                 player.disableStronger()
                 powerUpActive = false
@@ -169,19 +188,23 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             slowMotionTimer?.invalidate()
             
             for enemy in enemies {
-                if enemy.shooter {
+                if enemy.smart {
                     enemy.projectileTimer.invalidate()
                 }
             }
             
-            let transition = SKTransition.moveIn(with: .down, duration: 0.5)
+            let transition = SKTransition.moveIn(with: .down, duration: 0.75)
             let scene = EndingScene(size: size, score: score)
             self.view?.presentScene(scene, transition: transition)
         case playerStrengthPowerUpBitMasks:
+            strengthStart?.play()
+            
             nodeB.removeFromParent()
             
             player.enableStronger()
         case playerSlowMotionPowerUpBitMasks:
+            slowMotionStart?.play()
+            
             nodeB.removeFromParent()
             
             physicsWorld.speed = 0.5
@@ -198,17 +221,22 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     func startSlowMotionTimer() {
         slowMotionStresses = 5
         slowMotionTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { timer in
-            self.stressBackground()
             
             if self.slowMotionStresses <= 1 {
+                self.slowMotionTimerDone?.play()
+                
                 timer.invalidate()
                 
                 self.powerUpActive = false
                 
                 self.physicsWorld.speed = 1
                 self.player.speed = 1
+                
+                return
             }
             
+            self.slowMotionTimerTick?.play()
+            self.stressBackground()
             self.slowMotionStresses -= 1
         }
     }

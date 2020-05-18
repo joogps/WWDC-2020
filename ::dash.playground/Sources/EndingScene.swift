@@ -1,18 +1,26 @@
 import SpriteKit
+import AVFoundation
 
 let goodPhrases = ["you rocked it", "you're awesome", "impressive!", "good game", "pew pew"]
-let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another shot"]
+let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another ~shot~"]
 
 public class EndingScene: SKScene {
     var title: SKLabelNode!
     var subTitle: SKLabelNode!
+    
+    var goodSound: AVAudioPlayer!
+    var badSound: AVAudioPlayer!
     
     var score: Int!
     
     var canMove = false
     
     public init(size: CGSize, score: Int) {
+        goodSound = loadSound(fileNamed: "Sounds/confirmation_002.mp3")
+        badSound = loadSound(fileNamed: "Sounds/error_008.mp3")
+        
         self.score = score
+        
         super.init(size: size)
     }
     
@@ -21,10 +29,16 @@ public class EndingScene: SKScene {
     }
     
     public override func didMove(to view: SKView) {
+        if score >= 20 {
+            goodSound?.play()
+        } else {
+            badSound?.play()
+        }
+        
         backgroundColor = .white
         
         title = SKLabelNode()
-        title.text = (score >= 15 ? goodPhrases : badPhrases).randomElement()!
+        title.text = (score >= 20 ? goodPhrases : badPhrases).randomElement()!
         title.fontSize = 65
         title.fontColor = .black
         title.position = CGPoint(x: 80, y: frame.midY-title.frame.height/2+65)
