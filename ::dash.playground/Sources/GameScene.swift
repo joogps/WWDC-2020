@@ -199,6 +199,8 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         case playerStrengthPowerUpBitMasks:
             strengthStart?.play()
             
+            hapticFeedback()
+            
             nodeB.removeFromParent()
             
             player.enableStronger()
