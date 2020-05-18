@@ -1,5 +1,5 @@
 # //dash
-## A game for the skilled
+### A game for the skilled
 
 My submission for the WWDC20 Swift Student Challenge.
 
