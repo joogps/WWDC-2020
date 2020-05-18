@@ -20,7 +20,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     var difficulty = 1
     
     var scoreLabel: SKLabelNode!
-    var score = 1
+    var score = 0
 
     var currentTime: TimeInterval!
     
@@ -38,7 +38,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         background.position = CGPoint(x: frame.midX, y: frame.midY)
         background.zPosition = -2
         
-        player = Player(position: CGPoint(x: view.frame.midX, y: view.frame.midY), size: CGSize(width: 100, height: 100))
+        player = Player(position: CGPoint(x: view.frame.midX, y: view.frame.midY))
         
         scoreLabel = SKLabelNode()
         scoreLabel.text = String(score)
@@ -77,7 +77,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     @objc func createEnemy() {
         let strength = Bool.random() ? 1 : min(difficulty, Int.random(in: 2...3))
         let smart = difficulty > 3 ? (Float.random(in: 0...1) > 0.9) : false
-        let enemy = Enemy(frame: view!.frame, size: CGSize(width: 50, height: 50), strength: strength, smart: smart)
+        let enemy = Enemy(frame: view!.frame, strength: strength, smart: smart)
         enemies.append(enemy)
         addChild(enemy)
     }
@@ -85,7 +85,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     func createPowerUp(type: Int) {
         let texture = type == 0 ? "strength-power-up" : "slow-motion-power-up"
         let category = (type == 0 ? Categories.StrengthPowerUp : Categories.SlowMotionPowerUp).rawValue
-        let powerup = PowerUp(frame: view!.frame, size: CGSize(width: 25, height: 25), texture: "Assets/\(texture)", category: category)
+        let powerup = PowerUp(frame: view!.frame, texture: "Assets/\(texture)", category: category)
         addChild(powerup)
     }
     
@@ -132,7 +132,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
         case projectileEnemyBitMasks:
             hapticFeedback()
             
-            let projectile = nodeA as! Projectile
+            let projectile = nodeA as! PlayerProjectile
             let enemy = nodeB as! Enemy
             
             if !projectile.superShot {

@@ -17,7 +17,7 @@ class Player: SKSpriteNode {
     
     var stronger = false
     
-    init(position: CGPoint, size: CGSize) {
+    init(position: CGPoint, size: CGSize = CGSize(width: 100, height: 100)) {
         shootSound = loadSound(fileNamed: "Sounds/drop_002.mp3")
         superShootSound = loadSound(fileNamed: "Sounds/minimize_004.mp3")
         errorSound = loadSound(fileNamed: "Sounds/bong_001.mp3")
@@ -75,7 +75,7 @@ class Player: SKSpriteNode {
             shootSound?.stop()
             shootSound?.play()
             
-            let projectile = Projectile(player: self, size: CGSize(width: 20, height: 10))
+            let projectile = PlayerProjectile(player: self)
             scene?.addChild(projectile)
             
             lastTimeShot = currentTime
@@ -88,7 +88,7 @@ class Player: SKSpriteNode {
         if currentTime - lastTimeSuperShot > superCooldown {
             superShootSound?.play()
             
-            let projectile = Projectile(player: self, size: CGSize(width: 60, height: 30), superShot: true)
+            let projectile = PlayerProjectile(player: self, size: CGSize(width: 60, height: 30), superShot: true)
             scene?.addChild(projectile)
             
             lastTimeSuperShot = currentTime

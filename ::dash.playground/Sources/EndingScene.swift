@@ -2,7 +2,7 @@ import SpriteKit
 import AVFoundation
 
 let goodPhrases = ["you rocked it", "you're awesome", "impressive!", "good game", "pew pew"]
-let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another ~shot~"]
+let badPhrases = ["you can do better", "i believe in u", "try harder next time", "don't give up", "give it another shot"]
 
 public class EndingScene: SKScene {
     var title: SKLabelNode!
@@ -11,6 +11,8 @@ public class EndingScene: SKScene {
     var goodSound: AVAudioPlayer!
     var badSound: AVAudioPlayer!
     
+    var startSoundEffect: AVAudioPlayer!
+    
     var score: Int!
     
     var canMove = false
@@ -18,6 +20,8 @@ public class EndingScene: SKScene {
     public init(size: CGSize, score: Int) {
         goodSound = loadSound(fileNamed: "Sounds/confirmation_002.mp3")
         badSound = loadSound(fileNamed: "Sounds/error_008.mp3")
+        
+        startSoundEffect = loadSound(fileNamed: "Sounds/confirmation_001.mp3")
         
         self.score = score
         
@@ -77,6 +81,8 @@ public class EndingScene: SKScene {
     
     func openGameScene() {
         if !canMove { return }
+        
+        startSoundEffect?.play()
         
         let transition = SKTransition.reveal(with: .down, duration: 0.5)
         let scene = GameScene(size: size)

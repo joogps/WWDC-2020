@@ -8,13 +8,14 @@ class Enemy: SKSpriteNode {
     
     var projectileTimer: Timer!
     
-    init(frame: CGRect, size: CGSize, strength: Int = 0, smart: Bool = false) {
+    init(frame: CGRect, size: CGSize = CGSize(width: 50, height: 50), strength: Int = 0, smart: Bool = false) {
         parentFrame = frame
         
         self.strength = strength
         self.smart = smart
         
         let prefix = smart ? "smart-" : ""
+        
         let texture = SKTexture(imageNamed: "Assets/\(prefix)enemy-\(strength).png")
         super.init(texture: texture, color: .white, size: size)
         
@@ -83,7 +84,7 @@ class Enemy: SKSpriteNode {
     }
     
     @objc func shoot() {
-        let projectile = EnemyProjectile(enemy: self, size: CGSize(width: 15, height: 15))
+        let projectile = EnemyProjectile(enemy: self)
         scene?.addChild(projectile)
     }
     

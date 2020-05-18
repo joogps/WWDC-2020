@@ -1,7 +1,7 @@
 import SpriteKit
 
 class PowerUp: SKSpriteNode {
-    init(frame: CGRect, size: CGSize, texture: String, category: UInt32) {
+    init(frame: CGRect, size: CGSize = CGSize(width: 25, height: 25), texture: String, category: UInt32) {
         super.init(texture: SKTexture(imageNamed: texture), color: .white, size: size)
         
         let side = Int.random(in: 0...1)
