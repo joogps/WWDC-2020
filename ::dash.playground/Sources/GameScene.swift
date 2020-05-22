@@ -70,7 +70,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func startEnemyTimer() {
         enemyTimer?.invalidate()
-        let speed = 1/(Double(min(difficulty, 4)) / 5.0)/Double(physicsWorld.speed)
+        let speed = 1/(Double(min(difficulty, 5)) / 5.0)/Double(physicsWorld.speed)
         enemyTimer = Timer.scheduledTimer(timeInterval: speed, target: self, selector: #selector(createEnemy), userInfo: nil, repeats: true)
     }
     
@@ -102,7 +102,7 @@ public class GameScene: SKScene, SKPhysicsContactDelegate {
             enemy.follow(point: player.position)
         }
         
-        if !powerUpActive && difficulty > 3 && Float.random(in: 0...1) > 0.999-Float(enemies.count)/750.0 {
+        if !powerUpActive && difficulty > 3 && Float.random(in: 0...1) > 0.9995-Float(enemies.count)/1000.0 {
             let type = Int.random(in: 0...1)
             createPowerUp(type: type)
             powerUpActive = true

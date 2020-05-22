@@ -86,6 +86,6 @@ public class EndingScene: SKScene {
         
         let transition = SKTransition.reveal(with: .down, duration: 0.5)
         let scene = GameScene(size: size)
-        self.view?.presentScene(scene, transition: transition)
+        view?.presentScene(scene, transition: transition)
     }
 }

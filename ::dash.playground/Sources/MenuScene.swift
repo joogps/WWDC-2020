@@ -53,6 +53,6 @@ public class MenuScene: SKScene {
         
         let transition = SKTransition.reveal(with: .up, duration: 0.75)
         let scene = GameScene(size: size)
-        self.view?.presentScene(scene, transition: transition)
+        view?.presentScene(scene, transition: transition)
     }
 }

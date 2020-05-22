@@ -1,8 +1,8 @@
 /*:
  # //dash
- #### A game for the skilled
+ #### a game for the skilled
  
- //dash _(pronounced 'slash-slash-dash')_ is a _shoot 'em up_ game with simple, well designed graphics and blazing fast action. It makes use of the Force Touch trackpad like no other of its kind, so, to enjoy it at most, you'll need one of those. Also, make sure that "Force click and haptic feedback" (under `System Preferences > Trackpad`) is enabled on your machine. Also, please resize your window until all content can be seen. This playground uses sound, so turn your volume up, and good luck!
+ //dash (pronounced _'slash-slash-dash'_) is a _shoot 'em up_ game with simple, well designed graphics and blazing fast action. It makes use of the Force Touch trackpad like no other of its kind, so, to enjoy it at most, you'll need one of those. Also, make sure that "Force click and haptic feedback" (under `System Preferences > Trackpad`) is enabled on your machine. Also, please resize your window until all content can be seen. This playground uses sound, so turn your volume up, and good luck!
  
   ***
  
