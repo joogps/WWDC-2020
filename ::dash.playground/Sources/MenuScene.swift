@@ -5,9 +5,9 @@ public class MenuScene: SKScene {
     var title: SKLabelNode!
     var subTitle: SKLabelNode!
     
-    var startSoundEffect: AVAudioPlayer!
-    
     var canMove = false
+    
+    var initialView: InitialView!
     
     public override func didMove(to view: SKView) {
         backgroundColor = .white
@@ -25,8 +25,6 @@ public class MenuScene: SKScene {
         subTitle.position = CGPoint(x: frame.midX, y: 50)
         subTitle.alpha = 0
         
-        startSoundEffect = loadSound(fileNamed: "Sounds/confirmation_001.mp3")
-        
         var fonts = helveticaNeueFonts().shuffled()
         fonts.append("HelveticaNeue-BoldItalic")
         animateLabelFont(label: title, fonts: fonts, timeInterval: 0.1, callback: {
@@ -38,6 +36,8 @@ public class MenuScene: SKScene {
         
         addChild(title)
         addChild(subTitle)
+        
+        initialView = view as? InitialView
     }
     
     public override func keyDown(with event: NSEvent) {
@@ -49,7 +49,7 @@ public class MenuScene: SKScene {
     }
     
     func openGameScene() {
-        startSoundEffect?.play()
+        initialView.startSoundEffect?.play()
         
         let transition = SKTransition.reveal(with: .up, duration: 0.75)
         let scene = GameScene(size: size)

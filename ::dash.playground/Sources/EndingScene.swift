@@ -8,21 +8,13 @@ public class EndingScene: SKScene {
     var title: SKLabelNode!
     var subTitle: SKLabelNode!
     
-    var goodSound: AVAudioPlayer!
-    var badSound: AVAudioPlayer!
-    
-    var startSoundEffect: AVAudioPlayer!
-    
     var score: Int!
     
     var canMove = false
     
+    var initialView: InitialView!
+    
     public init(size: CGSize, score: Int) {
-        goodSound = loadSound(fileNamed: "Sounds/confirmation_002.mp3")
-        badSound = loadSound(fileNamed: "Sounds/error_008.mp3")
-        
-        startSoundEffect = loadSound(fileNamed: "Sounds/confirmation_001.mp3")
-        
         self.score = score
         
         super.init(size: size)
@@ -33,10 +25,12 @@ public class EndingScene: SKScene {
     }
     
     public override func didMove(to view: SKView) {
+        initialView = view as? InitialView
+        
         if score >= 20 {
-            goodSound?.play()
+            initialView.goodSound?.play()
         } else {
-            badSound?.play()
+            initialView.badSound?.play()
         }
         
         backgroundColor = .white
@@ -82,7 +76,7 @@ public class EndingScene: SKScene {
     func openGameScene() {
         if !canMove { return }
         
-        startSoundEffect?.play()
+        initialView.startSoundEffect?.play()
         
         let transition = SKTransition.reveal(with: .down, duration: 0.5)
         let scene = GameScene(size: size)

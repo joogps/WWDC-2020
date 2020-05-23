@@ -3,7 +3,7 @@ import AVFoundation
 
 enum Categories: UInt32 {
     case Player = 1
-    case Projectile = 2
+    case PlayerProjectile = 2
     case Enemy = 4
     case EnemyProjectile = 8
     case StrengthPowerUp = 16

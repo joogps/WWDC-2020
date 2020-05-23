@@ -8,7 +8,7 @@ class PlayerProjectile: Projectile {
         
         super.init(node: player, size: size, velocity: 275)
         
-        physicsBody?.categoryBitMask = Categories.Projectile.rawValue
+        physicsBody?.categoryBitMask = Categories.PlayerProjectile.rawValue
         physicsBody?.contactTestBitMask = Categories.Enemy.rawValue
     }
     

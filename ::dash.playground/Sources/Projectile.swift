@@ -13,7 +13,7 @@ class Projectile: SKSpriteNode {
         let pw = node.size.width
         let ph = node.size.height
         
-        position = CGPoint(x: px+(dx*(pw/2-size.width/2)), y: py+(dy*(ph/2-size.height/2)))
+        position = CGPoint(x: px+(dx*(pw/2-size.width/2)), y: py+(dy*(ph/2-size.width/2)))
         zRotation = node.zRotation
         
         zPosition = -1

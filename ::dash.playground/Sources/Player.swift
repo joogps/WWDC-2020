@@ -2,10 +2,6 @@ import SpriteKit
 import AVFoundation
 
 class Player: SKSpriteNode {
-    var shootSound: AVAudioPlayer!
-    var superShootSound: AVAudioPlayer!
-    var errorSound: AVAudioPlayer!
-    
     var lastTimeShot: TimeInterval
     let cooldown = 0.3
     
@@ -18,10 +14,6 @@ class Player: SKSpriteNode {
     var stronger = false
     
     init(position: CGPoint, size: CGSize = CGSize(width: 100, height: 100)) {
-        shootSound = loadSound(fileNamed: "Sounds/drop_002.mp3")
-        superShootSound = loadSound(fileNamed: "Sounds/minimize_004.mp3")
-        errorSound = loadSound(fileNamed: "Sounds/bong_001.mp3")
-            
         lastTimeShot = cooldown
         lastTimeSuperShot = superCooldown
         superShotInterval = 0.0
@@ -69,34 +61,34 @@ class Player: SKSpriteNode {
     }
     
     func regularShoot() {
-        let currentTime = (scene as! GameScene).currentTime!
+        let gameScene = scene as! GameScene
         
-        if currentTime - lastTimeShot > cooldown {
-            shootSound?.stop()
-            shootSound?.play()
+        if gameScene.currentTime - lastTimeShot > cooldown {
+            gameScene.initialView.shootSound?.stop()
+            gameScene.initialView.shootSound?.play()
             
             let projectile = PlayerProjectile(player: self)
-            scene?.addChild(projectile)
+            gameScene.addChild(projectile)
             
-            lastTimeShot = currentTime
+            lastTimeShot = gameScene.currentTime
         }
     }
     
     func superShoot() {
-        let currentTime = (scene as! GameScene).currentTime!
+        let gameScene = scene as! GameScene
         
-        if currentTime - lastTimeSuperShot > superCooldown {
-            superShootSound?.play()
+        if gameScene.currentTime - lastTimeSuperShot > superCooldown {
+            gameScene.initialView.superShootSound?.play()
             
             let projectile = PlayerProjectile(player: self, size: CGSize(width: 60, height: 30), superShot: true)
-            scene?.addChild(projectile)
+            gameScene.addChild(projectile)
             
-            lastTimeSuperShot = currentTime
-        } else if currentTime - lastTimeSuperShot > 0.5 {
-            errorSound?.play()
+            lastTimeSuperShot = gameScene.currentTime
+        } else if gameScene.currentTime - lastTimeSuperShot > 0.5 {
+            gameScene.initialView.errorSound?.play()
         }
         
-        (scene as! GameScene).stressBackground()
+        gameScene.stressBackground()
     }
     
     func dash() {

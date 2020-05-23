@@ -11,7 +11,7 @@ More info is available in the Xcode playground's markdown.
 
 All sounds used were download from the [Kenney](https://www.kenney.nl) Interface Sounds package under the CC0 license.
 
-The lightning icon was made by [Dave Gandy](https://www.flaticon.com/authors/dave-gandy) and downloaded from [Flaticon](https://www.flaticon.com/) for free.
+The lightning icon was made by [Dave Gandy](https://www.flaticon.com/authors/dave-gandy) and downloaded from [Flaticon](https://www.flaticon.com) for free.
 
 ***
 

@@ -39,7 +39,7 @@ class Enemy: SKSpriteNode {
         
         physicsBody?.categoryBitMask = Categories.Enemy.rawValue
         physicsBody?.collisionBitMask = Categories.Enemy.rawValue
-        physicsBody?.contactTestBitMask = Categories.Projectile.rawValue | Categories.Player.rawValue
+        physicsBody?.contactTestBitMask = Categories.PlayerProjectile.rawValue | Categories.Player.rawValue
         
         if smart {
             blink()
